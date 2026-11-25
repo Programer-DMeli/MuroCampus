@@ -11,6 +11,10 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 //Anotaciones de Retrofit
+
+
+//Utilizzamos retrofit de Kotlin, definiendo las peticiones HTTP, lo cual lo hacemos
+//
 interface PostApi {
 
     @GET("posts")
