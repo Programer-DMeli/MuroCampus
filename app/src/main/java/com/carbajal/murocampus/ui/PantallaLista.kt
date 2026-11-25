@@ -25,15 +25,28 @@ fun PantallaLista(
 ) {
     val estado by viewModel.lista.collectAsStateWithLifecycle()
     val usuarioFiltro by viewModel.usuarioFiltro.collectAsStateWithLifecycle()
+    val busquedaQuery by viewModel.busquedaQuery.collectAsStateWithLifecycle()
 
     Column(
         modifier = modifier.fillMaxSize()
     ) {
+        // Campo de Búsqueda local por título
+        OutlinedTextField(
+            value = busquedaQuery,
+            onValueChange = { viewModel.buscar(it) },
+            label = { Text("Buscar por título...") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 6.dp),
+            shape = RoundedCornerShape(12.dp),
+            singleLine = true
+        )
+
         // Fila de Chips de filtrado por usuario (Todos, Usuario 1 - 10)
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = 16.dp, vertical = 4.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             item {

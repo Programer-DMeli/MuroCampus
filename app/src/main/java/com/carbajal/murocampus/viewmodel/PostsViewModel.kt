@@ -38,11 +38,16 @@ class PostsViewModel(private val repo: PostRepository) : ViewModel() {
     private val _usuarioFiltro = MutableStateFlow<Int?>(null)
     val usuarioFiltro: StateFlow<Int?> = _usuarioFiltro.asStateFlow()
 
+    private val _busquedaQuery = MutableStateFlow("")
+    val busquedaQuery: StateFlow<String> = _busquedaQuery.asStateFlow()
+
     private val _crearEstado = MutableStateFlow<UiState<Post>?>(null)
     val crearEstado: StateFlow<UiState<Post>?> = _crearEstado.asStateFlow()
 
     private val _editarEstado = MutableStateFlow<UiState<Post>?>(null)
     val editarEstado: StateFlow<UiState<Post>?> = _editarEstado.asStateFlow()
+
+    private var postsOriginales: List<Post> = emptyList()
 
     var idSeleccionado by mutableStateOf<Int?>(null)
         private set
@@ -57,6 +62,7 @@ class PostsViewModel(private val repo: PostRepository) : ViewModel() {
 
     fun filtrar(userId: Int?) {
         _usuarioFiltro.value = userId
+        _busquedaQuery.value = "" // Limpiar búsqueda al cambiar de filtro de usuario
         viewModelScope.launch {
             _lista.value = UiState.Cargando
             val resultado = if (userId == null) {
@@ -65,11 +71,22 @@ class PostsViewModel(private val repo: PostRepository) : ViewModel() {
                 repo.porUsuario(userId)
             }
             resultado.onSuccess { posts ->
+                postsOriginales = posts
                 _lista.value = UiState.Exito(posts)
             }.onFailure { error ->
                 _lista.value = UiState.Error(error.localizedMessage ?: "Error desconocido")
             }
         }
+    }
+
+    fun buscar(query: String) {
+        _busquedaQuery.value = query
+        val filtrados = if (query.isBlank()) {
+            postsOriginales
+        } else {
+            postsOriginales.filter { it.title.contains(query, ignoreCase = true) }
+        }
+        _lista.value = UiState.Exito(filtrados)
     }
 
     fun publicar(titulo: String, contenido: String) {
