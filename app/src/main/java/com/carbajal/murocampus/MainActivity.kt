@@ -16,6 +16,7 @@ import com.carbajal.murocampus.data.PostRepositoryRemote
 import com.carbajal.murocampus.data.remote.RetrofitClient
 import com.carbajal.murocampus.ui.PantallaCrear
 import com.carbajal.murocampus.ui.PantallaDetalle
+import com.carbajal.murocampus.ui.PantallaEditar
 import com.carbajal.murocampus.ui.PantallaLista
 import com.carbajal.murocampus.ui.theme.MurocampusTheme
 import com.carbajal.murocampus.viewmodel.PostsViewModel
@@ -34,6 +35,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             MurocampusTheme {
                 var pantallaCrearActiva by remember { mutableStateOf(false) }
+                var pantallaEditarActiva by remember { mutableStateOf(false) }
+                var idEditando by remember { mutableStateOf<Int?>(null) }
+                var tituloEditando by remember { mutableStateOf("") }
                 val idSeleccionado = viewModel.idSeleccionado
 
                 Scaffold(
@@ -48,7 +52,7 @@ class MainActivity : ComponentActivity() {
                         )
                     },
                     floatingActionButton = {
-                        if (idSeleccionado == null && !pantallaCrearActiva) {
+                        if (idSeleccionado == null && !pantallaCrearActiva && !pantallaEditarActiva) {
                             FloatingActionButton(
                                 onClick = { pantallaCrearActiva = true },
                                 containerColor = MaterialTheme.colorScheme.primary
@@ -63,6 +67,15 @@ class MainActivity : ComponentActivity() {
                     }
                 ) { innerPadding ->
                     when {
+                        pantallaEditarActiva -> {
+                            PantallaEditar(
+                                postId = idEditando ?: 0,
+                                tituloActual = tituloEditando,
+                                viewModel = viewModel,
+                                onBack = { pantallaEditarActiva = false },
+                                modifier = Modifier.padding(innerPadding)
+                            )
+                        }
                         pantallaCrearActiva -> {
                             PantallaCrear(
                                 viewModel = viewModel,
@@ -73,6 +86,11 @@ class MainActivity : ComponentActivity() {
                         idSeleccionado != null -> {
                             PantallaDetalle(
                                 viewModel = viewModel,
+                                onEditClick = { id, title ->
+                                    idEditando = id
+                                    tituloEditando = title
+                                    pantallaEditarActiva = true
+                                },
                                 modifier = Modifier.padding(innerPadding)
                             )
                         }

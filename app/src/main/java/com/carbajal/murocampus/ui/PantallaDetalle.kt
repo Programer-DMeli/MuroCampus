@@ -22,6 +22,7 @@ import com.carbajal.murocampus.viewmodel.UiState
 @Composable
 fun PantallaDetalle(
     viewModel: PostsViewModel,
+    onEditClick: (Int, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val estadoDetalle by viewModel.detalle.collectAsStateWithLifecycle()
@@ -127,6 +128,29 @@ fun PantallaDetalle(
                         items(comentarios) { comentario ->
                             TarjetaComentario(comentario = comentario)
                         }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Botón Editar Título
+                    Button(
+                        onClick = {
+                            onEditClick(post.id, post.title)
+                        },
+                        shape = RoundedCornerShape(50),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp)
+                    ) {
+                        Text(
+                            text = "Editar Título",
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))

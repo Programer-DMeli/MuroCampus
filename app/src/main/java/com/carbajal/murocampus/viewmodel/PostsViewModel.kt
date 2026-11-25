@@ -41,6 +41,9 @@ class PostsViewModel(private val repo: PostRepository) : ViewModel() {
     private val _crearEstado = MutableStateFlow<UiState<Post>?>(null)
     val crearEstado: StateFlow<UiState<Post>?> = _crearEstado.asStateFlow()
 
+    private val _editarEstado = MutableStateFlow<UiState<Post>?>(null)
+    val editarEstado: StateFlow<UiState<Post>?> = _editarEstado.asStateFlow()
+
     var idSeleccionado by mutableStateOf<Int?>(null)
         private set
 
@@ -85,6 +88,23 @@ class PostsViewModel(private val repo: PostRepository) : ViewModel() {
         _crearEstado.value = null
     }
 
+    fun actualizarTitulo(id: Int, nuevoTitulo: String) {
+        viewModelScope.launch {
+            _editarEstado.value = UiState.Cargando
+            val resultado = repo.actualizarTitulo(id, nuevoTitulo)
+            resultado.onSuccess { postActualizado ->
+                _editarEstado.value = UiState.Exito(postActualizado)
+                cargar()
+            }.onFailure { error ->
+                _editarEstado.value = UiState.Error(error.localizedMessage ?: "Error al actualizar")
+            }
+        }
+    }
+
+    fun limpiarEditarEstado() {
+        _editarEstado.value = null
+    }
+
     fun eliminar(id: Int, onEliminado: () -> Unit) {
         viewModelScope.launch {
             val resultado = repo.eliminar(id)
@@ -92,8 +112,7 @@ class PostsViewModel(private val repo: PostRepository) : ViewModel() {
                 cerrarDetalle()
                 cargar()
                 onEliminado()
-            }.onFailure { error ->
-                // Podría exponerse un estado de error si se requiere
+            }.onFailure { _ ->
             }
         }
     }
