@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.carbajal.murocampus.data.PostRepository
 import com.carbajal.murocampus.model.Comentario
+import com.carbajal.murocampus.model.NuevoPost
 import com.carbajal.murocampus.model.Post
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -34,6 +35,12 @@ class PostsViewModel(private val repo: PostRepository) : ViewModel() {
     private val _detalle = MutableStateFlow<UiState<DetalleUi>>(UiState.Cargando)
     val detalle: StateFlow<UiState<DetalleUi>> = _detalle.asStateFlow()
 
+    private val _usuarioFiltro = MutableStateFlow<Int?>(null)
+    val usuarioFiltro: StateFlow<Int?> = _usuarioFiltro.asStateFlow()
+
+    private val _crearEstado = MutableStateFlow<UiState<Post>?>(null)
+    val crearEstado: StateFlow<UiState<Post>?> = _crearEstado.asStateFlow()
+
     var idSeleccionado by mutableStateOf<Int?>(null)
         private set
 
@@ -42,15 +49,40 @@ class PostsViewModel(private val repo: PostRepository) : ViewModel() {
     }
 
     fun cargar() {
+        filtrar(_usuarioFiltro.value)
+    }
+
+    fun filtrar(userId: Int?) {
+        _usuarioFiltro.value = userId
         viewModelScope.launch {
             _lista.value = UiState.Cargando
-            val resultado = repo.listar()
+            val resultado = if (userId == null) {
+                repo.listar()
+            } else {
+                repo.porUsuario(userId)
+            }
             resultado.onSuccess { posts ->
                 _lista.value = UiState.Exito(posts)
             }.onFailure { error ->
                 _lista.value = UiState.Error(error.localizedMessage ?: "Error desconocido")
             }
         }
+    }
+
+    fun publicar(titulo: String, contenido: String) {
+        viewModelScope.launch {
+            _crearEstado.value = UiState.Cargando
+            val resultado = repo.crear(NuevoPost(userId = 1, title = titulo, body = contenido))
+            resultado.onSuccess { post ->
+                _crearEstado.value = UiState.Exito(post)
+            }.onFailure { error ->
+                _crearEstado.value = UiState.Error(error.localizedMessage ?: "Error al publicar")
+            }
+        }
+    }
+
+    fun limpiarCrearEstado() {
+        _crearEstado.value = null
     }
 
     fun abrir(id: Int) {
