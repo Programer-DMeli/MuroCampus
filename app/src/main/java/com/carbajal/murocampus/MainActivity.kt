@@ -1,51 +1,51 @@
 package com.carbajal.murocampus
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.lifecycleScope
+import com.carbajal.murocampus.data.PostRepositoryRemote
 import com.carbajal.murocampus.data.remote.RetrofitClient
+import com.carbajal.murocampus.ui.PantallaLista
 import com.carbajal.murocampus.ui.theme.MurocampusTheme
-import kotlinx.coroutines.launch
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
+import com.carbajal.murocampus.viewmodel.PostsViewModel
+import com.carbajal.murocampus.viewmodel.PostsViewModelFactory
 
+@OptIn(ExperimentalMaterial3Api::class)
+class MainActivity : ComponentActivity() {
+
+    private val viewModel: PostsViewModel by viewModels {
+        PostsViewModelFactory(PostRepositoryRemote(RetrofitClient.api))
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             MurocampusTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    topBar = {
+                        TopAppBar(
+                            title = { Text("MuroCampus") },
+                            colors = TopAppBarDefaults.topAppBarColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                titleContentColor = MaterialTheme.colorScheme.onPrimary
+                            )
+                        )
+                    }
+                ) { innerPadding ->
+                    PantallaLista(
+                        viewModel = viewModel,
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MurocampusTheme {
-        Greeting("Android")
     }
 }

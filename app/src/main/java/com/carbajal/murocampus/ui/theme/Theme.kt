@@ -12,15 +12,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = BluePrimary,
+    secondary = BluePrimaryDark,
+    tertiary = BadgeOrange
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+    primary = BluePrimary,
+    secondary = BluePrimaryDark,
+    tertiary = BadgeOrange
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -36,8 +36,8 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun MurocampusTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    // Dynamic color disabled by default to respect the app's characteristic blue brand color
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
