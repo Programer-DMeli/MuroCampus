@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
 import com.carbajal.murocampus.data.PostRepositoryRemote
 import com.carbajal.murocampus.data.remote.RetrofitClient
+import com.carbajal.murocampus.ui.PantallaDetalle
 import com.carbajal.murocampus.ui.PantallaLista
 import com.carbajal.murocampus.ui.theme.MurocampusTheme
 import com.carbajal.murocampus.viewmodel.PostsViewModel
@@ -40,10 +41,20 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                 ) { innerPadding ->
-                    PantallaLista(
-                        viewModel = viewModel,
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    val idSeleccionado = viewModel.idSeleccionado
+
+                    if (idSeleccionado == null) {
+                        PantallaLista(
+                            viewModel = viewModel,
+                            onPostClick = { id -> viewModel.abrir(id) },
+                            modifier = Modifier.padding(innerPadding)
+                        )
+                    } else {
+                        PantallaDetalle(
+                            viewModel = viewModel,
+                            modifier = Modifier.padding(innerPadding)
+                        )
+                    }
                 }
             }
         }

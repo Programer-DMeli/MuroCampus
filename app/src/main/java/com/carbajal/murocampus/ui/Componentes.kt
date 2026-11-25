@@ -1,6 +1,7 @@
 package com.carbajal.murocampus.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -14,8 +15,7 @@ import androidx.compose.ui.unit.sp
 import com.carbajal.murocampus.model.Post
 
 @Composable
-fun TarjetaPost(post: Post, modifier: Modifier = Modifier) {
-    // Color de la etiqueta del usuario según la referencia visual (Usuario 1: Azul, Usuario 2: Naranja, etc.)
+fun TarjetaPost(post: Post, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val badgeColor = when (post.userId) {
         1 -> Color(0xFF1976D2) // Azul
         2 -> Color(0xFFF57C00) // Naranja / Ámbar
@@ -26,7 +26,8 @@ fun TarjetaPost(post: Post, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp),
+            .padding(horizontal = 16.dp, vertical = 6.dp)
+            .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)

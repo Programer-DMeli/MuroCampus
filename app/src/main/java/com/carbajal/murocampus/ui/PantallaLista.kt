@@ -18,6 +18,7 @@ import com.carbajal.murocampus.viewmodel.UiState
 @Composable
 fun PantallaLista(
     viewModel: PostsViewModel,
+    onPostClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val estado by viewModel.lista.collectAsStateWithLifecycle()
@@ -61,7 +62,10 @@ fun PantallaLista(
                     contentPadding = PaddingValues(vertical = 8.dp)
                 ) {
                     items(st.datos) { post ->
-                        TarjetaPost(post = post)
+                        TarjetaPost(
+                            post = post,
+                            onClick = { onPostClick(post.id) }
+                        )
                     }
                 }
             }
