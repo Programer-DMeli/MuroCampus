@@ -11,25 +11,25 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 //Anotaciones de Retrofit
-
-
-//Utilizzamos retrofit de Kotlin, definiendo las peticiones HTTP, lo cual lo hacemos
+//Utilizamos retrofit definiendo las peticiones HTTP, lo cual lo hacemos en esta interface
 //
 interface PostApi {
 
-    @GET("posts")
-    suspend fun listar(): List<Post>
+    //Utilizamos las anotaciones de Retrofit
+    @GET("posts")  //con esto retrofit genera automaticamente la implementacion basandose en sus anotaciones
+    suspend fun listar(): List<Post>  //suspend permite que las peticiones se realicen en un hilo secundario
+    //sin congelar la interfaz de usuario
 
     @GET("posts/{id}")
-    suspend fun detalle(@Path("id") id: Int): Post
+    suspend fun detalle(@Path("id") id: Int): Post  //reemplza de forma dinamica
 
     @GET("posts/{id}/comments")
     suspend fun comentarios(@Path("id") id: Int): List<Comentario>
 
     @GET("posts")
-    suspend fun porUsuario(@Query("userId") userId: Int): List<Post>
+    suspend fun porUsuario(@Query("userId") userId: Int): List<Post> //agrega un parametro de filtrado
 
     @POST("posts")
-    suspend fun crear(@Body nuevo: NuevoPost): Post
+    suspend fun crear(@Body nuevo: NuevoPost): Post  //envia un objeto completo
 
 }
