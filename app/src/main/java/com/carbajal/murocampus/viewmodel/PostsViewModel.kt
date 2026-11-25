@@ -85,6 +85,19 @@ class PostsViewModel(private val repo: PostRepository) : ViewModel() {
         _crearEstado.value = null
     }
 
+    fun eliminar(id: Int, onEliminado: () -> Unit) {
+        viewModelScope.launch {
+            val resultado = repo.eliminar(id)
+            resultado.onSuccess {
+                cerrarDetalle()
+                cargar()
+                onEliminado()
+            }.onFailure { error ->
+                // Podría exponerse un estado de error si se requiere
+            }
+        }
+    }
+
     fun abrir(id: Int) {
         idSeleccionado = id
         viewModelScope.launch {
